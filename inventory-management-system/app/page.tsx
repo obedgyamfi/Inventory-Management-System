@@ -2,10 +2,17 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ModeToggle } from '@/components/mode-toggle'
 
 export default function Home(){
   return (
-    <div className='flex min-h-screen items-center justify-center'>
+    <div className='flex flex-col min-h-screen items-center justify-center'>
+      {/* <header className="flex items-center justify-between p-4 bg-white shadow-md">
+        <div className="flex items-center space-x-4">
+          <h1 className="text-xl font-semibold tracking-tight">Company Name</h1>
+        </div>
+        <ModeToggle />
+      </header> */}
         <div className='mx-auto flex w-full flex-col justify-center space-y-6 max-w-md p-8 bg-white rounded-md shadow-lg'>
           <div className='flex flex-col items-center space-y-3'>
             <h1 className='text-2xl font-semibold tracking-tight'>Admin Login</h1>

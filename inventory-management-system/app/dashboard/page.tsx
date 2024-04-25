@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Bell, LogOut, Settings } from "lucide-react"
+import { ModeToggle } from "@/components/mode-toggle"
 
 // Sample inventory data
 const inventory = [
@@ -20,9 +21,10 @@ export default function InventoryDashboard() {
       {/* Header Navbar */}
       <header className="flex items-center justify-between p-4 bg-white shadow-md">
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-semibold tracking-tight">Electrical Switchgear Limited</h1>
+          <h1 className="text-xl text-secondary-foreground font-semibold tracking-tight">Electrical Switchgear Limited</h1>
         </div>
         <div className="flex items-center space-x-4">
+            <ModeToggle />
           <Button variant="ghost" size="sm">
             <Bell className="w-4 h-4" />
           </Button>

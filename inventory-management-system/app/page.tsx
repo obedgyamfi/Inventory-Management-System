@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ModeToggle } from '@/components/mode-toggle'
+
 
 export default function Home(){
   return (

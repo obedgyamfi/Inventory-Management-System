@@ -15,12 +15,20 @@ export default function SignUpPage() {
         </div>
         <div className="grid gap-6">
           <div className="grid gap-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="firstname">First Name</Label>
             <Input
-              id="username"
-              type="username"
-              placeholder="Username"
+              id="firstname"
+              type="firstname"
+              placeholder="firstname"
             />
+	 </div>
+	 <div className="grid gap-2">
+	    <Label htmlFor="lastname">Last Name</Label>
+	    <Input
+	      id="lastname"
+	      type="lastname"
+	      placeholder="lastname"
+	   />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -56,7 +64,7 @@ export default function SignUpPage() {
         <div className="flex justify-center">
           <span className="text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link href="/" className="text-primary-foreground hover:underline">
+            <Link href="/" className="text-secondary-foreground font-semibold hover:underline">
               Login
             </Link>
           </span>

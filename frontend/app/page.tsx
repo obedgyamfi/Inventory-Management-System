@@ -66,7 +66,7 @@ export default function Home(){
           <div className='flex justify-center'>
             <span className='text-sm text-muted-foreground'>
               Don&apos;t have an account?{ ' ' }
-              <Link href="/signup" className='text-secondary-foreground hover:underline'>
+              <Link href="/signup" className='text-secondary-foreground font-semibold hover:underline'>
                 Sign up
                 </Link>
             </span>

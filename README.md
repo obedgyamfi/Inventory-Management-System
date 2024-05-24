@@ -134,7 +134,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Gyamfi Obed - obedgyamfi53@gmail.com
 
-Project Link: [https://github.com/your-username/inventory-management-website](https://github.com/obedgyamfi/Inventory-Management-System)
+Project Link: [https://github.com/obedgyamfi/Inventory-Management-System](https://github.com/obedgyamfi/Inventory-Management-System)
 
 ---
 

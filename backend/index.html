@@ -4,83 +4,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Form</title>
+    <title>Login</title>
 </head>
 
 <body>
-    <h1>Test Form</h1>
-    <form>
-        <!-- <div>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="" required>
-        </div>
-        <div>
-            <label for="gender">Gender:</label>
-            <input type="text" id="gender" name="gender" value="" required>
-        </div> -->
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="" required>
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <!-- <div>
-            <label for="logDate">Log Date:</label>
-            <input type="date" id="logDate" name="logDate" value="" required>
-        </div>
-        <div>
-            <label for="status">Status:</label>
-            <select id="status" name="status" required>
-                <option value="">Select Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
-        </div> -->
-        <button type="submit">Submit</button>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="hidden" id="csrfTokenInput">
+        <button type="submit">Login</button>
     </form>
 
     <script>
-        const form = document.querySelector('form');
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/csrf-token', {
+                    method: 'GET',
+                    credentials: 'include', // Ensure cookies are included in the request
+                });
 
-        form.addEventListener('submit', async function (e) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log('CSRF token:', data.csrfToken);
+
+                // Store the CSRF token for later use, for example, in form submissions
+                document.getElementById('csrfTokenInput').value = data.csrfToken;
+            } catch (error) {
+                console.error('Error fetching CSRF token:', error);
+            }
+        });
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            ///email validation
-            var SecureEmailRegExp = /^[a-zA-Z0-9. _-]+@[a-zA-Z0-9. -]+\. [a-zA-Z]{2,4}$/;
-            // if (SecureEmailRegExp.test()) {
-            const dataSend = {
-                email: document.querySelector('#email').value,
-                password: document.querySelector('#password').value,
-            }
-            if (dataSend) {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const csrfToken = document.getElementById('csrfTokenInput').value;
 
+            if (!validateEmail(email)) {
+                console.error('Invalid email format');
+                return;
+            }
+
+            const dataToSend = {
+                email: email,
+                password: password,
+            };
+
+            try {
                 const request = await fetch("http://localhost:3000/api/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "X-XSRF-TOKEN": csrfToken
                     },
-                    body: JSON.stringify(dataSend)
+                    credentials: 'include', // Ensure cookies are sent
+                    body: JSON.stringify(dataToSend),
                 });
 
                 if (request.status === 200) {
-                    const data = await request.json(dataSend);
-                    console.log(data)
-                    if (data == 'success') {
-                        console.log('entry was a success');
+                    const data = await request.json();
+                    console.log(data);
+                    if (data === 'success') {
+                        console.log('Entry was a success');
                     }
                 } else {
-                    console.log('request failed')
+                    console.log('Login request failed:', request.status);
                 }
-
-            } else {
-                console.log(dataSend)
+            } catch (error) {
+                console.error('Error during login request:', error);
             }
-            // } else {
-            //     console.log('pls provide a valid email')
-            // }
-        })
+        });
+
+        function validateEmail(email) {
+            // Simple email validation
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
     </script>
 </body>
 

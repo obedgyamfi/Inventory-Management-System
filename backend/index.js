@@ -57,7 +57,6 @@ const csrfProtection = csrf({
   },
 });
 app.use(csrfProtection);
-
 // Routes
 app.use("/api", routes);
 

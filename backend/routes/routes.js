@@ -1,5 +1,6 @@
 const express = require("express");
 const UserModel = require("../Schemas/users");
+const OrderDetails = require("../Schemas/orders");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,6 +9,26 @@ const limiter = require("../Schemas/limiter");
 const csrf = require("csurf");
 const csrfProtection = csrf({ cookie: true });
 const secretKey = process.env.JWT_KEY;
+//verify JWT token
+function verifyToken(req, res, next) {
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    return res
+      .status(403)
+      .json({ message: "No token provided, please log in" });
+  }
+
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Failed to authenticate token" });
+    }
+
+    // If token is valid, save user ID to request for use in other routes
+    req.userId = decoded.userId;
+    next();
+  });
+}
 
 // Generate a JWT token
 function generateToken(userId) {
@@ -120,6 +141,61 @@ router.post("/upload_data", async (req, res) => {
   } else {
     // Handle case where password is empty
     res.status(400).json({ message: "Password cannot be empty" });
+  }
+});
+
+router.post("/add_order", verifyToken, csrfProtection, async (req, res) => {
+  const { customer, customer_email, type, status, amount, log_Date } = req.body;
+
+  if (!customer || !customer_email || !type || !status || !amount) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  if (!customer || !validator.isAlpha(customer)) {
+    return res.status(400).json({
+      message: "Customer name is required and should contain only letters",
+    });
+  }
+  if (!customer_email || !validator.isEmail(customer_email)) {
+    return res.status(400).json({ message: "A valid email is required" });
+  }
+  if (!type || !validator.isAlpha(type)) {
+    return res
+      .status(400)
+      .json({ message: "Type is required and should contain only letters" });
+  }
+  if (!status || !validator.isInt(status.toString())) {
+    return res
+      .status(400)
+      .json({ message: "Status is required and should be an integer" });
+  }
+  if (!amount || !validator.isFloat(amount.toString())) {
+    return res
+      .status(400)
+      .json({ message: "Amount is required and should be a number" });
+  }
+  if (!log_Date || !validator.isISO8601(log_Date)) {
+    return res
+      .status(400)
+      .json({ message: "Valid date is required in ISO 8601 format" });
+  }
+  try {
+    const data = new OrderDetails({
+      customer: validator.escape(customer),
+      customer_email: validator.normalizeEmail(customer_email),
+      type: validator.escape(type),
+      status: validator.toInt(status.toString()),
+      amount: validator.toFloat(amount.toString()),
+      log_Date: new Date(log_Date),
+    });
+    const response = await data.save();
+    if (response) {
+      res
+        .status(200)
+        .json({ message: "operation was successful", order: response });
+    }
+  } catch (error) {
+    console.error("Error saving data to MongoDB:", error);
+    res.status(500).json({ message: "Error saving data to MongoDB" });
   }
 });
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data Form</title>
+</head>
+
+<body>
+    <h2>Upload Data</h2>
+    <form id="uploadForm">
+        <label for="customer">Customer Name:</label>
+        <input type="text" id="customer" name="customer" required><br><br>
+
+        <label for="customer_email">Customer Email:</label>
+        <input type="email" id="customer_email" name="customer_email" required><br><br>
+
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type" required><br><br>
+
+        <label for="status">Status:</label>
+        <input type="text" id="status" name="status" required><br><br>
+
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount" required><br><br>
+
+        <label for="log_Date">Log Date:</label>
+        <input type="date" id="log_Date" name="log_Date" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = {
+                customer: document.getElementById('customer').value,
+                customer_email: document.getElementById('customer_email').value,
+                type: document.getElementById('type').value,
+                status: document.getElementById('status').value,
+                amount: document.getElementById('amount').value,
+                log_Date: document.getElementById('log_Date').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/add_order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-XSRF-TOKEN': getCookie('XSRF-TOKEN') // Assuming the CSRF token is stored in a cookie
+                    },
+                    credentials: 'include', // Important: includes cookies in the request
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Data uploaded successfully: ' + JSON.stringify(result));
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error uploading data:', error);
+                alert('An error occurred while uploading data.');
+            }
+        });
+
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</body>
+
+</html>

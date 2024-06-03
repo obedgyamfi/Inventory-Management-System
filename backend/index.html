@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+
+<body>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="hidden" id="csrfTokenInput">
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/csrf-token', {
+                    method: 'GET',
+                    credentials: 'include', // Ensure cookies are included in the request
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log('CSRF token:', data.csrfToken);
+
+                // Store the CSRF token for later use, for example, in form submissions
+                document.getElementById('csrfTokenInput').value = data.csrfToken;
+            } catch (error) {
+                console.error('Error fetching CSRF token:', error);
+            }
+        });
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const csrfToken = document.getElementById('csrfTokenInput').value;
+
+            if (!validateEmail(email)) {
+                console.error('Invalid email format');
+                return;
+            }
+
+            const dataToSend = {
+                email: email,
+                password: password,
+            };
+
+            try {
+                const request = await fetch("http://localhost:3000/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-XSRF-TOKEN": csrfToken
+                    },
+                    credentials: 'include', // Ensure cookies are sent
+                    body: JSON.stringify(dataToSend),
+                });
+
+                if (request.status === 200) {
+                    const data = await request.json();
+                    console.log(data);
+                    if (data === 'success') {
+                        console.log('Entry was a success');
+                    }
+                } else {
+                    console.log('Login request failed:', request.status);
+                }
+            } catch (error) {
+                console.error('Error during login request:', error);
+            }
+        });
+
+        function validateEmail(email) {
+            // Simple email validation
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    </script>
+</body>
+
+</html>
